@@ -76,15 +76,15 @@ I focus on **optimizing clinical workflows, improving hospital efficiency, and c
 ## 📊 GitHub Analytics  
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=virex&show_icons=true&theme=tokyonight&hide_border=true" />
+  <img src="https://github-readme-stats.vercel.app/api?username=itskaero&show_icons=true&theme=tokyonight&hide_border=true" />
 </p>
 
 <p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=virex&theme=tokyonight&hide_border=true" />
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=itskaero&theme=tokyonight&hide_border=true" />
 </p>
 
 <p align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=virex&theme=tokyo-night&hide_border=true" />
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=itskaero&theme=tokyo-night&hide_border=true" />
 </p>
 
 ---
@@ -92,14 +92,14 @@ I focus on **optimizing clinical workflows, improving hospital efficiency, and c
 ## 🌐 Connect  
 
 <p align="center">
-  <a href="mailto:virex.dev@gmail.com">
-    <img src="https://img.shields.io/badge/Email-virex.dev@gmail.com-00E7FF?style=for-the-badge&logo=gmail&logoColor=white" />
+  <a href="mailto:itskaero@gmail.com">
+    <img src="https://img.shields.io/badge/Email-itskaero@gmail.com-00E7FF?style=for-the-badge&logo=gmail&logoColor=white" />
   </a>
   <a href="#">
-    <img src="https://img.shields.io/badge/Discord-virex-00E7FF?style=for-the-badge&logo=discord&logoColor=white" />
+    <img src="https://img.shields.io/badge/Discord-itskaero-00E7FF?style=for-the-badge&logo=discord&logoColor=white" />
   </a>
   <a href="#">
-    <img src="https://img.shields.io/badge/GitHub-virex-00E7FF?style=for-the-badge&logo=github&logoColor=white" />
+    <img src="https://img.shields.io/badge/GitHub-itskaero-00E7FF?style=for-the-badge&logo=github&logoColor=white" />
   </a>
 </p>
 
