@@ -1,7 +1,7 @@
 # 🧬 KAERO | Medical-Tech Engineer  
 
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?size=24&duration=3500&color=00E7FF&center=true&vCenter=true&width=750&lines=Medical+Graduate+%7C+Tech+Builder;Healthcare+Automation+Developer;Discord+Bot+Engineer;Creative+Coder+%26+Digital+Artist" />
+  <img src="https://raw.githubusercontent.com/itskaero/itskaero/refs/heads/main/banner.png" />
 </p>
 
 <p align="center">
