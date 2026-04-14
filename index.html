@@ -1,0 +1,451 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAERO  lo-fi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width:100%; height:100%; overflow:hidden; font-family:'Inter',sans-serif; }
+
+    /* SCENE */
+    #scene {
+      position:fixed; inset:0;
+      background:url('./banner.png') center center / cover no-repeat;
+      overflow:hidden;
+    }
+    #grain {
+      position:absolute; inset:0; z-index:10; pointer-events:none;
+      opacity:.055;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat:repeat;
+    }
+    #vignette {
+      position:absolute; inset:0; z-index:9; pointer-events:none;
+      background:radial-gradient(ellipse at 50% 62%, transparent 30%, rgba(8,4,20,.62) 100%);
+    }
+    #star-canvas { position:absolute; top:0; left:0; width:100%; height:68%; z-index:2; pointer-events:none; }
+
+    /* CLOUDS */
+    .cloud { position:absolute; z-index:3; pointer-events:none; }
+    .cloud-1 { top:15%; animation:driftCloud 52s linear infinite; }
+    .cloud-2 { top:27%; animation:driftCloud 72s linear infinite; animation-delay:-28s; opacity:.5; }
+    .cloud-3 { top:9%;  animation:driftCloud 95s linear infinite; animation-delay:-55s; opacity:.32; }
+    @keyframes driftCloud { from{left:-270px} to{left:calc(100vw + 270px)} }
+
+    /* GRASS */
+    #grass-layer { position:absolute; bottom:0; left:0; right:0; height:21%; z-index:4; pointer-events:none; overflow:hidden; }
+    .blade {
+      position:absolute; bottom:0; border-radius:2px 2px 0 0;
+      transform-origin:bottom center;
+      background:linear-gradient(to top,#2a5710,#5cb82a);
+      animation:sway ease-in-out infinite;
+    }
+    @keyframes sway { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+
+    /* FIREFLIES */
+    .ff {
+      position:absolute; border-radius:50%; background:#ffe066;
+      box-shadow:0 0 6px 2px rgba(255,224,102,.88); z-index:5; pointer-events:none;
+      animation:floatFF linear infinite;
+    }
+    @keyframes floatFF {
+      0%  {transform:translate(0,0) scale(0);opacity:0}
+      10% {transform:translate(6px,-14px) scale(1);opacity:1}
+      50% {transform:translate(-10px,-55px) scale(1.2);opacity:.8}
+      90% {opacity:.2}
+      100%{transform:translate(4px,-110px) scale(.35);opacity:0}
+    }
+
+    /* PLAYER */
+    #player {
+      position:fixed; bottom:1.6rem; left:1.6rem; z-index:50;
+      display:flex; align-items:center; gap:.9rem; padding:.8rem 1.1rem;
+      background:rgba(15,9,32,.87); border:1px solid rgba(255,198,115,.22);
+      border-radius:14px; backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+      box-shadow:0 4px 28px rgba(0,0,0,.55); min-width:188px;
+      transition:box-shadow .3s;
+    }
+    #player:hover { box-shadow:0 6px 36px rgba(0,0,0,.6),0 0 20px rgba(255,160,60,.12); }
+    #play-btn {
+      width:36px; height:36px; border-radius:50%;
+      background:linear-gradient(135deg,#FF8B42,#c54b8a); border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:.8rem; flex-shrink:0;
+      box-shadow:0 2px 12px rgba(255,139,66,.45);
+      transition:transform .2s,box-shadow .2s;
+    }
+    #play-btn:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(255,139,66,.65)}
+    .pmeta{flex:1;min-width:0}
+    .plabel{font-family:'Press Start 2P',monospace;font-size:.4rem;color:rgba(255,242,215,.42);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+    .ptrack{font-size:.75rem;font-weight:500;color:#FFD166;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .eqw{display:flex;align-items:flex-end;gap:2px;height:16px}
+    .eqb{width:3px;border-radius:1px;background:linear-gradient(to top,#FF8B42,#c54b8a);animation:eqB .8s ease-in-out infinite}
+    .eqb:nth-child(1){animation-delay:0s;height:4px}
+    .eqb:nth-child(2){animation-delay:.1s;height:9px}
+    .eqb:nth-child(3){animation-delay:.2s;height:14px}
+    .eqb:nth-child(4){animation-delay:.15s;height:7px}
+    .eqb:nth-child(5){animation-delay:.05s;height:11px}
+    @keyframes eqB{0%,100%{transform:scaleY(.22)}50%{transform:scaleY(1)}}
+    .eqw.off .eqb{animation-play-state:paused;transform:scaleY(.22)}
+
+    /* NAV DOTS */
+    #nav-dots{position:fixed;bottom:1.8rem;left:50%;transform:translateX(-50%);z-index:50;display:flex;gap:1.2rem;align-items:center}
+    .ndot{display:flex;flex-direction:column;align-items:center;gap:.38rem;background:none;border:none;cursor:pointer;padding:0;transition:transform .2s}
+    .ndot:hover{transform:translateY(-4px)}
+    .ndc{width:10px;height:10px;border-radius:50%;background:rgba(255,242,215,.26);border:1.5px solid rgba(255,242,215,.52);transition:background .25s,box-shadow .25s}
+    .ndot:hover .ndc,.ndot.on .ndc{background:#FFD166;box-shadow:0 0 8px rgba(255,209,102,.88),0 0 18px rgba(255,209,102,.28)}
+    .ndl{font-family:'Press Start 2P',monospace;font-size:.36rem;color:rgba(255,242,215,.42);letter-spacing:.06em;text-transform:uppercase}
+    .ndot:hover .ndl,.ndot.on .ndl{color:#FFD166}
+
+    /* CORNER */
+    #corner{position:fixed;top:1.3rem;right:1.5rem;z-index:50;display:flex;gap:.6rem;align-items:center}
+    .clink{display:flex;align-items:center;gap:.42rem;padding:.42rem .85rem;background:rgba(15,9,32,.82);border:1px solid rgba(255,198,115,.22);border-radius:8px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#FFD166;text-decoration:none;font-family:'Press Start 2P',monospace;font-size:.38rem;letter-spacing:.05em;transition:transform .2s,border-color .2s,box-shadow .2s}
+    .clink i{font-size:.82rem}
+    .clink:hover{transform:translateY(-2px);border-color:rgba(255,198,115,.5);box-shadow:0 4px 18px rgba(0,0,0,.45)}
+
+    /* PANELS */
+    .pbdrop{position:fixed;inset:0;z-index:199;background:rgba(4,2,14,.52);opacity:0;pointer-events:none;transition:opacity .35s;backdrop-filter:blur(2px)}
+    .pbdrop.open{opacity:1;pointer-events:auto}
+    .panel{position:fixed;top:0;right:-105%;width:min(460px,100vw);height:100%;z-index:200;background:rgba(12,7,28,.94);border-left:1px solid rgba(255,198,115,.17);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow-y:auto;padding:2rem 1.8rem;transition:right .42s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column}
+    .panel.open{right:0}
+    .panel::-webkit-scrollbar{width:3px}
+    .panel::-webkit-scrollbar-track{background:transparent}
+    .panel::-webkit-scrollbar-thumb{background:rgba(255,198,115,.24);border-radius:3px}
+    .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.8rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,198,115,.13)}
+    .pht{font-family:'Press Start 2P',monospace;font-size:.58rem;color:#FFD166;letter-spacing:.12em}
+    .pclose{width:30px;height:30px;background:none;border:1px solid rgba(255,198,115,.22);border-radius:7px;color:rgba(255,242,215,.52);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
+    .pclose:hover{border-color:#FFD166;color:#FFD166}
+
+    /* project card */
+    .pcard{display:flex;flex-direction:column;gap:.6rem;padding:1.15rem 1.1rem;background:rgba(255,255,255,.038);border:1px solid rgba(255,198,115,.14);border-radius:10px;margin-bottom:.85rem;text-decoration:none;color:inherit;position:relative;overflow:hidden;transition:background .22s,border-color .22s,transform .22s}
+    .pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#FF8B42,#c54b8a);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+    .pcard:hover{background:rgba(255,255,255,.065);border-color:rgba(255,198,115,.35);transform:translateX(5px)}
+    .pcard:hover::before{transform:scaleX(1)}
+    .pct{display:flex;align-items:center;justify-content:space-between}
+    .pci{color:#FFD166;font-size:1rem}
+    .pca{color:rgba(255,242,215,.22);font-size:.75rem;transition:color .2s,transform .2s}
+    .pcard:hover .pca{color:#FFD166;transform:translate(3px,-3px)}
+    .pcn{font-family:'Press Start 2P',monospace;font-size:.46rem;color:#f5f0e8;letter-spacing:.04em;line-height:1.9}
+    .pcd{font-size:.78rem;color:rgba(255,242,215,.48);line-height:1.65}
+    .ptags{display:flex;flex-wrap:wrap;gap:.4rem}
+    .ptag{padding:.2rem .65rem;border-radius:99px;font-size:.65rem;font-weight:600;border:1px solid}
+    .t-ts{color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)}
+    .t-py{color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)}
+    .t-html{color:#fb923c;border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.08)}
+    .t-js{color:#facc15;border-color:rgba(250,204,21,.3);background:rgba(250,204,21,.08)}
+    .t-med{color:#e879f9;border-color:rgba(232,121,249,.3);background:rgba(232,121,249,.08)}
+
+    /* about rows */
+    .arow{display:flex;align-items:flex-start;gap:.85rem;padding:.9rem 0;border-bottom:1px solid rgba(255,198,115,.1)}
+    .arow:last-child{border-bottom:none}
+    .aric{width:34px;height:34px;border-radius:8px;flex-shrink:0;background:rgba(255,198,115,.08);border:1px solid rgba(255,198,115,.17);display:flex;align-items:center;justify-content:center;color:#FFD166;font-size:.85rem}
+    .artx h4{font-family:'Press Start 2P',monospace;font-size:.42rem;color:#f5f0e8;letter-spacing:.05em;margin-bottom:.35rem;line-height:1.9}
+    .artx p{font-size:.77rem;color:rgba(255,242,215,.46);line-height:1.65}
+
+    /* stack grid */
+    .sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem}
+    .si{background:rgba(255,255,255,.038);border:1px solid rgba(255,198,115,.13);border-radius:9px;padding:.65rem .35rem;display:flex;flex-direction:column;align-items:center;gap:.4rem;transition:background .2s,border-color .2s}
+    .si:hover{background:rgba(255,198,115,.08);border-color:rgba(255,198,115,.3)}
+    .si i{font-size:1.05rem}
+    .si span{font-size:.54rem;color:rgba(255,242,215,.4);text-align:center;line-height:1.4}
+
+    /* contact */
+    .cclink{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:rgba(255,255,255,.038);border:1px solid rgba(255,198,115,.14);border-radius:10px;text-decoration:none;color:rgba(255,242,215,.72);font-size:.83rem;margin-bottom:.7rem;transition:background .2s,border-color .2s,color .2s}
+    .cclink:hover{background:rgba(255,198,115,.08);border-color:rgba(255,198,115,.38);color:#FFD166}
+    .cclink i{width:18px;text-align:center;color:#FFD166;font-size:.9rem}
+
+    .pbt{font-size:.82rem;color:rgba(255,242,215,.5);line-height:1.75;margin-bottom:1.4rem}
+    .pbt em{color:#FFD166;font-style:normal}
+
+    @media(max-width:500px){.panel{width:100vw}#player{bottom:3.8rem;min-width:160px}#nav-dots{gap:.9rem}}
+  </style>
+</head>
+<body>
+<div id="scene">
+  <canvas id="star-canvas"></canvas>
+  <div id="grain"></div>
+  <div id="vignette"></div>
+  <div class="cloud cloud-1">
+    <svg width="180" height="54" viewBox="0 0 180 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="45" y="34" width="90"  height="12" fill="rgba(255,210,195,.44)"/>
+      <rect x="27" y="24" width="126" height="14" fill="rgba(255,210,195,.44)"/>
+      <rect x="54" y="16" width="72"  height="12" fill="rgba(255,220,205,.38)"/>
+      <rect x="63" y="8"  width="54"  height="10" fill="rgba(255,225,210,.32)"/>
+    </svg>
+  </div>
+  <div class="cloud cloud-2">
+    <svg width="130" height="42" viewBox="0 0 130 42" fill="none">
+      <rect x="20" y="24" width="90"  height="11" fill="rgba(215,158,192,.38)"/>
+      <rect x="10" y="30" width="110" height="9"  fill="rgba(215,158,192,.38)"/>
+      <rect x="28" y="16" width="74"  height="11" fill="rgba(225,168,202,.33)"/>
+      <rect x="40" y="8"  width="50"  height="9"  fill="rgba(230,174,208,.28)"/>
+    </svg>
+  </div>
+  <div class="cloud cloud-3">
+    <svg width="220" height="60" viewBox="0 0 220 60" fill="none">
+      <rect x="60" y="40" width="100" height="13" fill="rgba(185,148,218,.32)"/>
+      <rect x="36" y="28" width="148" height="15" fill="rgba(185,148,218,.32)"/>
+      <rect x="66" y="18" width="88"  height="13" fill="rgba(195,156,226,.28)"/>
+      <rect x="80" y="9"  width="60"  height="11" fill="rgba(200,161,230,.22)"/>
+    </svg>
+  </div>
+  <div id="grass-layer"></div>
+</div>
+
+<div id="corner">
+  <a class="clink" href="https://github.com/itskaero" target="_blank" rel="noopener">
+    <i class="fab fa-github"></i> itskaero
+  </a>
+</div>
+
+<div id="player">
+  <button id="play-btn" aria-label="Play lo-fi radio">
+    <i class="fas fa-play" id="play-ico"></i>
+  </button>
+  <div class="pmeta">
+    <div class="plabel">lo-fi radio &#x2601;</div>
+    <div class="ptrack">groove salad &#x2022; somafm</div>
+  </div>
+  <div class="eqw off" id="eqw">
+    <div class="eqb"></div><div class="eqb"></div><div class="eqb"></div>
+    <div class="eqb"></div><div class="eqb"></div>
+  </div>
+</div>
+
+<audio id="lofi-audio" loop preload="none">
+  <source src="https://ice6.somafm.com/groovesalad-128-mp3" type="audio/mpeg"/>
+  <source src="https://ice2.somafm.com/groovesalad-128-mp3" type="audio/mpeg"/>
+</audio>
+
+<div id="nav-dots">
+  <button class="ndot" onclick="openPanel('projects')">
+    <div class="ndc"></div><span class="ndl">work</span>
+  </button>
+  <button class="ndot" onclick="openPanel('about')">
+    <div class="ndc"></div><span class="ndl">about</span>
+  </button>
+  <button class="ndot" onclick="openPanel('stack')">
+    <div class="ndc"></div><span class="ndl">stack</span>
+  </button>
+  <button class="ndot" onclick="openPanel('contact')">
+    <div class="ndc"></div><span class="ndl">say hi</span>
+  </button>
+</div>
+
+<div class="pbdrop" id="backdrop" onclick="closePanel()"></div>
+
+<div class="panel" id="panel-projects">
+  <div class="ph">
+    <span class="pht">// my work</span>
+    <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
+  </div>
+  <a class="pcard" href="https://github.com/itskaero/clinicalledger" target="_blank" rel="noopener">
+    <div class="pct"><i class="fas fa-notes-medical pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
+    <div class="pcn">clinicalledger</div>
+    <p class="pcd">A GitHub-style collaborative platform transforming clinical notes, cases &amp; monthly insights into shared medical knowledge.</p>
+    <div class="ptags"><span class="ptag t-ts">TypeScript</span><span class="ptag t-med">Healthcare</span></div>
+  </a>
+  <a class="pcard" href="https://github.com/itskaero/brawlhalla-leaderboard" target="_blank" rel="noopener">
+    <div class="pct"><i class="fas fa-trophy pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
+    <div class="pcn">brawlhalla-leaderboard</div>
+    <p class="pcd">Generates &amp; uploads leaderboard images for Brawlhalla players using their IDs, with optional webhook delivery.</p>
+    <div class="ptags"><span class="ptag t-py">Python</span></div>
+  </a>
+  <a class="pcard" href="https://github.com/itskaero/antibiotogram" target="_blank" rel="noopener">
+    <div class="pct"><i class="fas fa-bacterium pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
+    <div class="pcn">antibiotogram</div>
+    <p class="pcd">Interactive antibiogram reference tool for rapid clinical decision support &mdash; navigate antibiotic susceptibility fast.</p>
+    <div class="ptags"><span class="ptag t-html">HTML</span><span class="ptag t-med">Medical</span></div>
+  </a>
+  <a class="pcard" href="https://github.com/itskaero/opd-tracker" target="_blank" rel="noopener">
+    <div class="pct"><i class="fas fa-clipboard-list pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
+    <div class="pcn">opd-tracker</div>
+    <p class="pcd">Outpatient department tracker for patient data, appointments &amp; clinical flow &mdash; lightweight JavaScript frontend.</p>
+    <div class="ptags"><span class="ptag t-js">JavaScript</span><span class="ptag t-med">Clinical</span></div>
+  </a>
+  <a class="pcard" href="https://github.com/itskaero/nicu-antibiogram" target="_blank" rel="noopener">
+    <div class="pct"><i class="fas fa-baby pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
+    <div class="pcn">nicu-antibiogram</div>
+    <p class="pcd">Neonatal ICU antibiogram utility tailored for neonatal susceptibility profiles &amp; critical neonatal care settings.</p>
+    <div class="ptags"><span class="ptag t-js">JavaScript</span><span class="ptag t-med">NICU</span></div>
+  </a>
+</div>
+
+<div class="panel" id="panel-about">
+  <div class="ph">
+    <span class="pht">// about me</span>
+    <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
+  </div>
+  <p class="pbt">Medical graduate &amp; hobbyist developer building intelligent tools at the intersection of <em>clinical practice and technology</em> &mdash; optimising workflows, improving outcomes, automating the tedious.</p>
+  <div class="arow">
+    <div class="aric"><i class="fas fa-hospital"></i></div>
+    <div class="artx"><h4>Medical Technology</h4><p>Induction &amp; rotation tracking, clinical workflow automation, medical calculators &amp; hospital productivity dashboards.</p></div>
+  </div>
+  <div class="arow">
+    <div class="aric"><i class="fas fa-robot"></i></div>
+    <div class="artx"><h4>Bots &amp; Automation</h4><p>Advanced Discord bots, moderation systems, image generation pipelines &amp; custom stat leaderboards.</p></div>
+  </div>
+  <div class="arow">
+    <div class="aric"><i class="fas fa-gamepad"></i></div>
+    <div class="artx"><h4>Gaming Utilities</h4><p>Game stat dashboards, custom API integrations &amp; image-based ranking systems for competitive communities.</p></div>
+  </div>
+  <div class="arow">
+    <div class="aric"><i class="fas fa-palette"></i></div>
+    <div class="artx"><h4>Creative Side</h4><p>Sketching, digital drawing, photography &amp; gaming content &mdash; creativity in every line of code.</p></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-stack">
+  <div class="ph">
+    <span class="pht">// tech stack</span>
+    <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
+  </div>
+  <p class="pbt">Languages, frameworks &amp; tools I reach for when building.</p>
+  <div class="sgrid">
+    <div class="si"><i class="fab fa-html5"     style="color:#fb923c"></i><span>HTML</span></div>
+    <div class="si"><i class="fab fa-css3-alt"  style="color:#60a5fa"></i><span>CSS</span></div>
+    <div class="si"><i class="fab fa-js-square" style="color:#facc15"></i><span>JS</span></div>
+    <div class="si"><i class="fab fa-python"    style="color:#60a5fa"></i><span>Python</span></div>
+    <div class="si"><i class="fab fa-vuejs"     style="color:#4ade80"></i><span>Vue</span></div>
+    <div class="si"><i class="fab fa-node-js"   style="color:#4ade80"></i><span>Node</span></div>
+    <div class="si"><i class="fab fa-git-alt"   style="color:#fb923c"></i><span>Git</span></div>
+    <div class="si"><i class="fab fa-github"    style="color:#e0e6f0"></i><span>GitHub</span></div>
+    <div class="si"><i class="fab fa-discord"   style="color:#818cf8"></i><span>Discord</span></div>
+    <div class="si"><i class="fas fa-database"  style="color:#fbbf24"></i><span>REST APIs</span></div>
+    <div class="si"><i class="fas fa-terminal"  style="color:#e879f9"></i><span>Scripting</span></div>
+    <div class="si"><i class="fas fa-heartbeat" style="color:#f87171"></i><span>MedTech</span></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-contact">
+  <div class="ph">
+    <span class="pht">// say hi</span>
+    <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
+  </div>
+  <p class="pbt">Building something in healthcare or want to collaborate? Always open to a chat.</p>
+  <a class="cclink" href="mailto:itskaerox@gmail.com"><i class="fas fa-envelope"></i> itskaerox@gmail.com</a>
+  <a class="cclink" href="https://github.com/itskaerox" target="_blank" rel="noopener"><i class="fab fa-github"></i> github.com/itskaerox</a>
+  <a class="cclink" href="https://discord.com/users/kae._.ro" target="_blank" rel="noopener"><i class="fab fa-discord"></i> kae._.ro on Discord</a>
+</div>
+
+<script>
+  /* STARS */
+  (function(){
+    const c=document.getElementById('star-canvas'),x=c.getContext('2d');
+    let S=[];
+    function resize(){c.width=window.innerWidth;c.height=window.innerHeight*.68;spawn();}
+    function rand(a,b){return Math.random()*(b-a)+a;}
+    function spawn(){
+      S=[];
+      const n=Math.floor(c.width*c.height/5600);
+      for(let i=0;i<n;i++){
+        S.push({
+          x:rand(0,c.width),y:rand(0,c.height*.92),
+          r:rand(.55,2.2),base:rand(.25,1),
+          spd:rand(.008,.025),ph:rand(0,Math.PI*2),
+          gold:Math.random()>.82
+        });
+      }
+    }
+    let t=0;
+    function draw(){
+      x.clearRect(0,0,c.width,c.height);
+      t+=.014;
+      S.forEach(s=>{
+        const a=s.base*(.4+.6*Math.sin(t*s.spd*55+s.ph));
+        x.beginPath();
+        x.arc(s.x,s.y,s.r,0,Math.PI*2);
+        x.fillStyle=s.gold?`rgba(255,209,102,${a})`:`rgba(245,239,228,${a})`;
+        x.fill();
+        if(s.r>1.55&&a>.55){
+          x.strokeStyle=`rgba(255,238,200,${a*.4})`;
+          x.lineWidth=.5;
+          x.beginPath();
+          x.moveTo(s.x-s.r*2.8,s.y);x.lineTo(s.x+s.r*2.8,s.y);
+          x.moveTo(s.x,s.y-s.r*2.8);x.lineTo(s.x,s.y+s.r*2.8);
+          x.stroke();
+        }
+      });
+      requestAnimationFrame(draw);
+    }
+    window.addEventListener('resize',resize);
+    resize();draw();
+  })();
+
+  /* GRASS */
+  (function(){
+    const layer=document.getElementById('grass-layer');
+    const n=Math.floor(window.innerWidth/5.2);
+    for(let i=0;i<n;i++){
+      const b=document.createElement('div');
+      b.className='blade';
+      const h=26+Math.random()*68;
+      b.style.cssText=`left:${(i/n)*100+(Math.random()-.5)*2}%;height:${h}px;opacity:${.44+Math.random()*.56};animation-duration:${1.8+Math.random()*3}s;animation-delay:${Math.random()*-5}s;width:${1.5+Math.random()*2.5}px`;
+      layer.appendChild(b);
+    }
+  })();
+
+  /* FIREFLIES */
+  (function(){
+    const scene=document.getElementById('scene');
+    function make(){
+      const f=document.createElement('div');
+      f.className='ff';
+      const sz=2+Math.random()*2;
+      f.style.cssText=`left:${8+Math.random()*84}%;bottom:${6+Math.random()*28}%;width:${sz}px;height:${sz}px;animation-duration:${4.5+Math.random()*6}s;animation-delay:${Math.random()*-8}s`;
+      scene.appendChild(f);
+      setTimeout(()=>f.remove(),13000);
+    }
+    for(let i=0;i<22;i++) make();
+    setInterval(make,700);
+  })();
+
+  /* MUSIC */
+  const audio=document.getElementById('lofi-audio');
+  const btn=document.getElementById('play-btn');
+  const ico=document.getElementById('play-ico');
+  const eqw=document.getElementById('eqw');
+  let playing=false;
+  btn.addEventListener('click',()=>{
+    if(playing){
+      audio.pause();
+      ico.className='fas fa-play';
+      eqw.classList.add('off');
+      playing=false;
+    }else{
+      audio.play().catch(()=>{});
+      ico.className='fas fa-pause';
+      eqw.classList.remove('off');
+      playing=true;
+    }
+  });
+
+  /* PANELS */
+  const backdrop=document.getElementById('backdrop');
+  let active=null;
+  function openPanel(name){
+    if(active) document.getElementById('panel-'+active).classList.remove('open');
+    active=name;
+    document.getElementById('panel-'+name).classList.add('open');
+    backdrop.classList.add('open');
+    document.querySelectorAll('.ndot').forEach(d=>{
+      d.classList.toggle('on',(d.getAttribute('onclick')||'').includes(name));
+    });
+  }
+  function closePanel(){
+    if(active) document.getElementById('panel-'+active).classList.remove('open');
+    active=null;
+    backdrop.classList.remove('open');
+    document.querySelectorAll('.ndot').forEach(d=>d.classList.remove('on'));
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape') closePanel();
+    if(e.key===' '&&e.target===document.body){e.preventDefault();btn.click();}
+  });
+</script>
+</body>
+</html>
+</html>
