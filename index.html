@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -106,18 +106,28 @@
     .clink i{font-size:.82rem}
     .clink:hover{transform:translateY(-2px);border-color:rgba(255,198,115,.5);box-shadow:0 4px 18px rgba(0,0,0,.45)}
 
-    /* PANELS */
+    /* BACKDROP */
     .pbdrop{position:fixed;inset:0;z-index:199;background:rgba(4,2,14,.52);opacity:0;pointer-events:none;transition:opacity .35s;backdrop-filter:blur(2px)}
     .pbdrop.open{opacity:1;pointer-events:auto}
-    .panel{position:fixed;top:0;right:-105%;width:min(460px,100vw);height:100%;z-index:200;background:rgba(12,7,28,.94);border-left:1px solid rgba(255,198,115,.17);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow-y:auto;padding:2rem 1.8rem;transition:right .42s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column}
-    .panel.open{right:0}
-    .panel::-webkit-scrollbar{width:3px}
-    .panel::-webkit-scrollbar-track{background:transparent}
-    .panel::-webkit-scrollbar-thumb{background:rgba(255,198,115,.24);border-radius:3px}
-    .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.8rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,198,115,.13)}
-    .pht{font-family:'Press Start 2P',monospace;font-size:.58rem;color:#FFD166;letter-spacing:.12em}
-    .pclose{width:30px;height:30px;background:none;border:1px solid rgba(255,198,115,.22);border-radius:7px;color:rgba(255,242,215,.52);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
+
+    /* CENTER PANEL */
+    #panel-main{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.96);width:min(520px,92vw);max-height:80vh;z-index:200;background:rgba(12,7,28,.95);border:1px solid rgba(255,198,115,.17);border-radius:18px;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .3s,transform .35s cubic-bezier(.22,1,.36,1)}
+    #panel-main.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+
+    /* TAB BAR */
+    .ptabs{display:flex;align-items:flex-end;gap:.25rem;padding:.7rem 1rem 0;border-bottom:1px solid rgba(255,198,115,.13);flex-shrink:0;position:relative}
+    .ptab{font-family:'Press Start 2P',monospace;font-size:.33rem;color:rgba(255,242,215,.35);letter-spacing:.07em;text-transform:uppercase;padding:.55rem .75rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;white-space:nowrap}
+    .ptab.on{color:#FFD166;border-bottom-color:#FFD166}
+    .ptab:hover:not(.on){color:rgba(255,242,215,.62)}
+    .pclose{position:absolute;top:.55rem;right:.7rem;width:27px;height:27px;background:none;border:1px solid rgba(255,198,115,.22);border-radius:7px;color:rgba(255,242,215,.45);cursor:pointer;font-size:.62rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
     .pclose:hover{border-color:#FFD166;color:#FFD166}
+
+    /* PANEL BODY */
+    .pbody{overflow-y:auto;flex:1;padding:1.4rem 1.6rem 1.8rem}
+    .pbody::-webkit-scrollbar{width:3px}
+    .pbody::-webkit-scrollbar-track{background:transparent}
+    .pbody::-webkit-scrollbar-thumb{background:rgba(255,198,115,.24);border-radius:3px}
+    .tsec{display:none}.tsec.on{display:block}
 
     /* project card */
     .pcard{display:flex;flex-direction:column;gap:.6rem;padding:1.15rem 1.1rem;background:rgba(255,255,255,.038);border:1px solid rgba(255,198,115,.14);border-radius:10px;margin-bottom:.85rem;text-decoration:none;color:inherit;position:relative;overflow:hidden;transition:background .22s,border-color .22s,transform .22s}
@@ -160,7 +170,7 @@
     .pbt{font-size:.82rem;color:rgba(255,242,215,.5);line-height:1.75;margin-bottom:1.4rem}
     .pbt em{color:#FFD166;font-style:normal}
 
-    @media(max-width:500px){.panel{width:100vw}#player{bottom:3.8rem;min-width:160px}#nav-dots{gap:.9rem}}
+    @media(max-width:500px){#panel-main{width:96vw;max-height:88vh}.ptab{font-size:.29rem;padding:.5rem .55rem}#player{bottom:3.8rem;min-width:160px}#nav-dots{gap:.9rem}}
   </style>
 </head>
 <body>
@@ -237,16 +247,29 @@
 
 <div class="pbdrop" id="backdrop" onclick="closePanel()"></div>
 
-<div class="panel" id="panel-projects">
-  <div class="ph">
-    <span class="pht">// my work</span>
+<div id="panel-main">
+  <div class="ptabs">
+    <button class="ptab" data-tab="projects" onclick="switchTab('projects')">work</button>
+    <button class="ptab" data-tab="about"    onclick="switchTab('about')">about</button>
+    <button class="ptab" data-tab="stack"    onclick="switchTab('stack')">stack</button>
+    <button class="ptab" data-tab="contact"  onclick="switchTab('contact')">say hi</button>
     <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
   </div>
+  <div class="pbody">
+
+    <!-- PROJECTS -->
+    <div class="tsec" id="tsec-projects">
   <a class="pcard" href="https://github.com/itskaero/clinicalledger" target="_blank" rel="noopener">
     <div class="pct"><i class="fas fa-notes-medical pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
     <div class="pcn">clinicalledger</div>
     <p class="pcd">A GitHub-style collaborative platform transforming clinical notes, cases &amp; monthly insights into shared medical knowledge.</p>
     <div class="ptags"><span class="ptag t-ts">TypeScript</span><span class="ptag t-med">Healthcare</span></div>
+  </a>
+  <a class="pcard" href="https://itskaero.github.io/sehatmandbachay" target="_blank" rel="noopener">
+    <div class="pct"><i class="fas fa-child pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
+    <div class="pcn">sehatmandbachay</div>
+    <p class="pcd">A child health &amp; wellness tracker &mdash; monitoring growth, vaccinations &amp; clinical milestones for paediatric care workflows.</p>
+    <div class="ptags"><span class="ptag t-js">JavaScript</span><span class="ptag t-med">Paediatrics</span></div>
   </a>
   <a class="pcard" href="https://github.com/itskaero/brawlhalla-leaderboard" target="_blank" rel="noopener">
     <div class="pct"><i class="fas fa-trophy pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
@@ -263,22 +286,19 @@
   <a class="pcard" href="https://itskaero.github.io/opd-tracker" target="_blank" rel="noopener">
     <div class="pct"><i class="fas fa-clipboard-list pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
     <div class="pcn">opd-tracker</div>
-    <p class="pcd">Outpatient department tracker for patient data, appointments &amp; clinical flow &mdash; lightweight JavaScript frontend.</p>
-    <div class="ptags"><span class="ptag t-js">JavaScript</span><span class="ptag t-med">Clinical</span></div>
+    <p class="pcd">Pediatric department tracker for patient data, appointments &amp; clinical flow &mdash; lightweight JavaScript frontend.</p>
+    <div class="ptags"><span class="ptag t-js">JavaScript</span><span class="ptag t-med">Paediatrics</span></div>
   </a>
-  <a class="pcard" href="https://itskaero.github.io/antiobiome" target="_blank" rel="noopener">
-    <div class="pct"><i class="fas fa-baby pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
+  <a class="pcard" href="https://itskaero.github.io/antibiome" target="_blank" rel="noopener">
+    <div class="pct"><i class="fas fa-bacterium pci"></i><i class="fas fa-arrow-up-right pca"></i></div>
     <div class="pcn">antibiome</div>
-    <p class="pcd">Ward antibiogram utility tailored for  susceptibility profiles &amp; ward care settings.</p>
-    <div class="ptags"><span class="ptag t-js">JavaScript</span><span class="ptag t-med">NICU</span></div>
+    <p class="pcd">Antibiotic susceptibility reference tool with microbiome-aware clinical decision support for rapid bedside lookup.</p>
+    <div class="ptags"><span class="ptag t-js">JavaScript</span><span class="ptag t-med">Medical</span></div>
   </a>
-</div>
+    </div><!-- /tsec-projects -->
 
-<div class="panel" id="panel-about">
-  <div class="ph">
-    <span class="pht">// about me</span>
-    <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
-  </div>
+    <!-- ABOUT -->
+    <div class="tsec" id="tsec-about">
   <p class="pbt">Medical graduate &amp; hobbyist developer building intelligent tools at the intersection of <em>clinical practice and technology</em> &mdash; optimising workflows, improving outcomes, automating the tedious.</p>
   <div class="arow">
     <div class="aric"><i class="fas fa-hospital"></i></div>
@@ -296,13 +316,10 @@
     <div class="aric"><i class="fas fa-palette"></i></div>
     <div class="artx"><h4>Creative Side</h4><p>Sketching, digital drawing, photography &amp; gaming content &mdash; creativity in every line of code.</p></div>
   </div>
-</div>
+    </div><!-- /tsec-about -->
 
-<div class="panel" id="panel-stack">
-  <div class="ph">
-    <span class="pht">// tech stack</span>
-    <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
-  </div>
+    <!-- STACK -->
+    <div class="tsec" id="tsec-stack">
   <p class="pbt">Languages, frameworks &amp; tools I reach for when building.</p>
   <div class="sgrid">
     <div class="si"><i class="fab fa-html5"     style="color:#fb923c"></i><span>HTML</span></div>
@@ -317,19 +334,19 @@
     <div class="si"><i class="fas fa-database"  style="color:#fbbf24"></i><span>REST APIs</span></div>
     <div class="si"><i class="fas fa-terminal"  style="color:#e879f9"></i><span>Scripting</span></div>
     <div class="si"><i class="fas fa-heartbeat" style="color:#f87171"></i><span>MedTech</span></div>
-  </div>
-</div>
+  </div><!-- /sgrid -->
+    </div><!-- /tsec-stack -->
 
-<div class="panel" id="panel-contact">
-  <div class="ph">
-    <span class="pht">// say hi</span>
-    <button class="pclose" onclick="closePanel()"><i class="fas fa-xmark"></i></button>
-  </div>
+    <!-- CONTACT -->
+    <div class="tsec" id="tsec-contact">
   <p class="pbt">Building something in healthcare or want to collaborate? Always open to a chat.</p>
   <a class="cclink" href="mailto:itskaerox@gmail.com"><i class="fas fa-envelope"></i> itskaerox@gmail.com</a>
   <a class="cclink" href="https://github.com/itskaerox" target="_blank" rel="noopener"><i class="fab fa-github"></i> github.com/itskaerox</a>
   <a class="cclink" href="https://discord.com/users/kae._.ro" target="_blank" rel="noopener"><i class="fab fa-discord"></i> kae._.ro on Discord</a>
-</div>
+    </div><!-- /tsec-contact -->
+
+  </div><!-- /pbody -->
+</div><!-- /panel-main -->
 
 <script>
   /* STARS */
@@ -425,20 +442,26 @@
 
   /* PANELS */
   const backdrop=document.getElementById('backdrop');
+  const panelMain=document.getElementById('panel-main');
   let active=null;
-  function openPanel(name){
-    if(active) document.getElementById('panel-'+active).classList.remove('open');
+  function switchTab(name){
+    document.querySelectorAll('.tsec').forEach(s=>s.classList.remove('on'));
+    document.querySelectorAll('.ptab').forEach(t=>t.classList.toggle('on',t.dataset.tab===name));
+    document.getElementById('tsec-'+name).classList.add('on');
     active=name;
-    document.getElementById('panel-'+name).classList.add('open');
-    backdrop.classList.add('open');
     document.querySelectorAll('.ndot').forEach(d=>{
       d.classList.toggle('on',(d.getAttribute('onclick')||'').includes(name));
     });
   }
+  function openPanel(name){
+    switchTab(name);
+    panelMain.classList.add('open');
+    backdrop.classList.add('open');
+  }
   function closePanel(){
-    if(active) document.getElementById('panel-'+active).classList.remove('open');
-    active=null;
+    panelMain.classList.remove('open');
     backdrop.classList.remove('open');
+    active=null;
     document.querySelectorAll('.ndot').forEach(d=>d.classList.remove('on'));
   }
   document.addEventListener('keydown',e=>{
